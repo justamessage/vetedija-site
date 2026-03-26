@@ -175,8 +175,13 @@ nav.scrolled {
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 0.18em;
-  color: var(--text);
+  color: var(--text-light);
   text-decoration: none;
+  transition: color 0.5s;
+}
+
+nav.scrolled .nav-logo {
+  color: var(--text);
 }
 
 .nav-links {
@@ -191,10 +196,14 @@ nav.scrolled {
   font-weight: 400;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: rgba(250,248,245,0.6);
   text-decoration: none;
   position: relative;
   transition: color 0.3s;
+}
+
+nav.scrolled .nav-links a {
+  color: var(--text-muted);
 }
 
 .nav-links a::after {
@@ -204,23 +213,34 @@ nav.scrolled {
   left: 0;
   width: 0;
   height: 1px;
-  background: var(--accent);
+  background: var(--accent-warm);
   transition: width 0.5s var(--ease);
 }
 
-.nav-links a:hover { color: var(--text); }
+.nav-links a:hover { color: var(--text-light); }
+nav.scrolled .nav-links a:hover { color: var(--text); }
 .nav-links a:hover::after { width: 100%; }
 
 .nav-cta {
   font-size: 11px !important;
   font-weight: 500 !important;
-  color: var(--text) !important;
-  border: 1px solid var(--text);
+  color: var(--text-light) !important;
+  border: 1px solid rgba(250,248,245,0.4);
   padding: 10px 28px;
   transition: all 0.4s var(--ease) !important;
 }
 
+nav.scrolled .nav-cta {
+  color: var(--text) !important;
+  border-color: var(--text);
+}
+
 .nav-cta:hover {
+  background: var(--text-light) !important;
+  color: var(--bg-dark) !important;
+}
+
+nav.scrolled .nav-cta:hover {
   background: var(--text) !important;
   color: var(--bg) !important;
 }
@@ -242,10 +262,14 @@ nav.scrolled {
   display: block;
   width: 100%;
   height: 1.5px;
-  background: var(--text);
+  background: var(--text-light);
   position: absolute;
   left: 0;
   transition: all 0.4s var(--ease);
+}
+
+nav.scrolled .nav-toggle span {
+  background: var(--text);
 }
 
 .nav-toggle span:nth-child(1) { top: 0; }
@@ -253,7 +277,7 @@ nav.scrolled {
 .nav-toggle span:nth-child(3) { bottom: 0; }
 
 /* ═══════════════════════════════
-   HERO — CINEMATIC
+   HERO — CINEMATIC VIDEO
    ═══════════════════════════════ */
 .hero {
   min-height: 100vh;
@@ -264,6 +288,28 @@ nav.scrolled {
   padding: 120px 48px 80px;
   position: relative;
   overflow: hidden;
+  background: var(--bg-dark);
+}
+
+.hero-video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-video::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(12,11,10,0.55);
+  pointer-events: none;
 }
 
 .hero-bg-text {
@@ -272,7 +318,7 @@ nav.scrolled {
   font-size: clamp(180px, 22vw, 360px);
   font-weight: 700;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(139,115,85,0.07);
+  -webkit-text-stroke: 1px rgba(250,248,245,0.04);
   letter-spacing: -0.03em;
   white-space: nowrap;
   top: 50%;
@@ -280,6 +326,7 @@ nav.scrolled {
   transform: translate(-50%, -50%);
   pointer-events: none;
   user-select: none;
+  z-index: 1;
 }
 
 .hero-content {
@@ -293,7 +340,7 @@ nav.scrolled {
   font-weight: 400;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-warm);
   margin-bottom: 40px;
   opacity: 0;
   animation: heroFade 1s var(--ease) 2.6s forwards;
@@ -306,6 +353,7 @@ nav.scrolled {
   line-height: 1.0;
   letter-spacing: -0.02em;
   margin-bottom: 32px;
+  color: var(--text-light);
 }
 
 .hero-title .word {
@@ -332,14 +380,14 @@ nav.scrolled {
 
 .hero-title em {
   font-style: italic;
-  color: var(--accent);
+  color: var(--accent-warm);
 }
 
 .hero-sub {
   font-size: 17px;
   font-weight: 300;
   line-height: 1.8;
-  color: var(--text-muted);
+  color: rgba(250,248,245,0.55);
   max-width: 520px;
   margin: 0 auto 56px;
   opacity: 0;
@@ -363,8 +411,8 @@ nav.scrolled {
   font-weight: 500;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--bg);
-  background: var(--text);
+  color: var(--bg-dark);
+  background: var(--bg);
   padding: 18px 44px;
   text-decoration: none;
   position: relative;
@@ -376,7 +424,7 @@ nav.scrolled {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--accent);
+  background: var(--accent-warm);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.5s var(--ease);
@@ -398,16 +446,16 @@ nav.scrolled {
   font-weight: 400;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--text);
+  color: var(--text-light);
   padding: 18px 44px;
   text-decoration: none;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(250,248,245,0.3);
   transition: all 0.4s var(--ease);
 }
 
 .btn-secondary:hover {
-  border-color: var(--text);
-  background: rgba(26,23,20,0.03);
+  border-color: var(--text-light);
+  background: rgba(250,248,245,0.08);
 }
 
 .hero-scroll-indicator {
@@ -426,7 +474,7 @@ nav.scrolled {
 .scroll-mouse {
   width: 24px;
   height: 38px;
-  border: 1.5px solid var(--accent);
+  border: 1.5px solid var(--accent-warm);
   border-radius: 12px;
   position: relative;
 }
@@ -435,7 +483,7 @@ nav.scrolled {
   content: '';
   width: 3px;
   height: 8px;
-  background: var(--accent);
+  background: var(--accent-warm);
   border-radius: 2px;
   position: absolute;
   top: 8px;
@@ -1240,6 +1288,269 @@ nav.scrolled {
 }
 
 /* ═══════════════════════════════
+   PRICING
+   ═══════════════════════════════ */
+.pricing {
+  padding: 160px 56px;
+  background: var(--bg);
+  position: relative;
+}
+
+.pricing-header {
+  margin-bottom: 80px;
+}
+
+.pricing-heading {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.pricing-heading em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.pricing-sub {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--text-muted);
+  max-width: 560px;
+  margin-top: 20px;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.pricing-card {
+  padding: 48px 36px;
+  border: 1px solid var(--line);
+  border-right: none;
+  position: relative;
+  transition: all 0.5s var(--ease);
+  display: flex;
+  flex-direction: column;
+}
+
+.pricing-card:last-child { border-right: 1px solid var(--line); }
+
+.pricing-card:hover {
+  background: var(--bg-warm);
+}
+
+.pricing-card.featured {
+  background: var(--bg-dark);
+  color: var(--text-light);
+  border-color: var(--bg-dark);
+  margin: -24px 0;
+  padding: 72px 36px;
+  z-index: 2;
+}
+
+.pricing-card.featured + .pricing-card {
+  border-left: none;
+}
+
+.pricing-card.featured:hover {
+  background: #1a1918;
+}
+
+.pricing-tier {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.pricing-card.featured .pricing-tier {
+  color: var(--accent-warm);
+}
+
+.pricing-card.enterprise .pricing-tier {
+  color: var(--accent);
+}
+
+.pricing-name {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.pricing-tagline {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+.pricing-card.featured .pricing-tagline {
+  color: rgba(250,248,245,0.45);
+}
+
+.pricing-price {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.pricing-card.featured .pricing-price {
+  color: var(--text-light);
+}
+
+.pricing-price-note {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-bottom: 36px;
+}
+
+.pricing-card.featured .pricing-price-note {
+  color: rgba(250,248,245,0.3);
+}
+
+.pricing-custom {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.pricing-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--line);
+  margin-bottom: 32px;
+}
+
+.pricing-card.featured .pricing-divider {
+  background: rgba(250,248,245,0.08);
+}
+
+.pricing-features {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 40px;
+  flex: 1;
+}
+
+.pricing-feature {
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--text-muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.pricing-card.featured .pricing-feature {
+  color: rgba(250,248,245,0.5);
+}
+
+.pricing-feature .pf-icon {
+  color: var(--accent);
+  flex-shrink: 0;
+  font-size: 11px;
+  margin-top: 3px;
+}
+
+.pricing-card.featured .pf-icon {
+  color: var(--accent-warm);
+}
+
+.pricing-btn {
+  display: block;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 18px 24px;
+  text-decoration: none;
+  transition: all 0.4s var(--ease);
+  margin-top: auto;
+}
+
+.pricing-btn-outline {
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+.pricing-btn-outline:hover {
+  border-color: var(--text);
+  background: rgba(26,23,20,0.03);
+}
+
+.pricing-btn-solid {
+  color: var(--bg);
+  background: var(--accent-warm);
+  border: 1px solid var(--accent-warm);
+}
+
+.pricing-btn-solid:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.pricing-btn-dark {
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--bg);
+}
+
+.pricing-btn-dark:hover {
+  background: var(--accent-warm);
+  border-color: var(--accent-warm);
+  color: var(--bg-dark);
+}
+
+.pricing-badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-warm);
+  color: var(--bg-dark);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 20px;
+  white-space: nowrap;
+}
+
+@media (max-width: 1024px) {
+  .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+  .pricing-card { border-right: 1px solid var(--line); }
+  .pricing-card:nth-child(1), .pricing-card:nth-child(2) { border-bottom: none; }
+  .pricing-card.featured { margin: 0; padding: 48px 36px; }
+}
+
+@media (max-width: 768px) {
+  .pricing { padding: 100px 24px; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .pricing-card { border-right: 1px solid var(--line); border-bottom: none; }
+  .pricing-card:last-child { border-bottom: 1px solid var(--line); }
+  .pricing-card.featured { margin: 0; padding: 48px 28px; }
+}
+
+/* ═══════════════════════════════
    NUMBERS — ANIMATED
    ═══════════════════════════════ */
 .numbers {
@@ -1693,6 +2004,7 @@ body::after {
     <li><a href="#shtyllat">Shtyllat</a></li>
     <li><a href="#kolektivi">Kolektivi</a></li>
     <li><a href="#programet">Programet</a></li>
+    <li><a href="#investimi">Investimi</a></li>
     <li><a href="#kontakt" class="nav-cta">Kontakt</a></li>
   </ul>
   <button class="nav-toggle" id="navToggle" aria-label="Menu">
@@ -1702,6 +2014,11 @@ body::after {
 
 <!-- ═══════ HERO ═══════ -->
 <section class="hero">
+  <div class="hero-video">
+    <video autoplay muted loop playsinline>
+      <source src="hero-video.mp4" type="video/mp4">
+    </video>
+  </div>
   <div class="hero-bg-text">VETËDIJA</div>
   <div class="hero-content">
     <p class="hero-eyebrow">Kolektivi për zhvillim të brendshëm</p>
@@ -2025,6 +2342,95 @@ body::after {
   </div>
 </section>
 
+<!-- ═══════ PRICING ═══════ -->
+<section class="pricing" id="investimi">
+  <div class="pricing-header">
+    <div class="section-label reveal">Investimi</div>
+    <h2 class="pricing-heading reveal">Ky nuk është shpenzim.<br>Është <em>investimi</em> më i rëndësishëm<br>që mund ta bësh.</h2>
+    <p class="pricing-sub reveal reveal-delay-1">Çdo rrugëtim është unik. Zgjidh nivelin që përputhet me gatishmërinë tënde — dhe ne do të jemi aty, hap pas hapi.</p>
+  </div>
+
+  <div class="pricing-grid">
+    <!-- TIER 1 -->
+    <div class="pricing-card reveal">
+      <div class="pricing-tier">Fillimi</div>
+      <h3 class="pricing-name">Vetëpranimi</h3>
+      <p class="pricing-tagline">Hapi i parë drejt vetëdijes. Për ata që janë gati të fillojnë punën e vërtetë me veten.</p>
+      <div class="pricing-price">5,000€</div>
+      <p class="pricing-price-note">3 muaj mentorimi</p>
+      <div class="pricing-divider"></div>
+      <div class="pricing-features">
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>12 sesione mentorimi 1:1 (javore)</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Akses në komunitetin Vetëdija</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Plan personal zhvillimi</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Materiale dhe ushtrime ekskluzive</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Mbështetje përmes mesazheve gjatë javës</span></div>
+      </div>
+      <a href="mailto:hello@oneproject.me?subject=Vetëdija — Vetëpranimi" class="pricing-btn pricing-btn-outline">Apliko tani</a>
+    </div>
+
+    <!-- TIER 2 — FEATURED -->
+    <div class="pricing-card featured reveal reveal-delay-1">
+      <div class="pricing-badge">Më i popullarizuari</div>
+      <div class="pricing-tier">Transformimi</div>
+      <h3 class="pricing-name">Vetënjohja</h3>
+      <p class="pricing-tagline">Rrugëtimi i plotë. Për ata që duan ndryshim të thellë — jo vetëm sipërfaqësor.</p>
+      <div class="pricing-price">10,000€</div>
+      <p class="pricing-price-note">6 muaj mentorimi intensiv</p>
+      <div class="pricing-divider"></div>
+      <div class="pricing-features">
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>24 sesione mentorimi 1:1 (javore)</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Gjithçka nga paketa Vetëpranimi</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>2 retreat ekskluzive me kolektivin</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Punë intensive me hije (shadow work)</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Sesione në grup me 4–6 pjesëmarrës</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Linjë e drejtpërdrejtë me mentorin tënd</span></div>
+      </div>
+      <a href="mailto:hello@oneproject.me?subject=Vetëdija — Vetënjohja" class="pricing-btn pricing-btn-solid">Apliko tani</a>
+    </div>
+
+    <!-- TIER 3 -->
+    <div class="pricing-card reveal reveal-delay-2">
+      <div class="pricing-tier">Premium</div>
+      <h3 class="pricing-name">Përtej vetvetes</h3>
+      <p class="pricing-tagline">Transformim total. Për ata që nuk duan vetëm ta kuptojnë veten — por ta jetojnë plotësisht.</p>
+      <div class="pricing-price">25,000€</div>
+      <p class="pricing-price-note">12 muaj — rrugëtimi i plotë</p>
+      <div class="pricing-divider"></div>
+      <div class="pricing-features">
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>48 sesione mentorimi 1:1</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Gjithçka nga paketa Vetënjohja</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Të gjitha retreat-et për 12 muaj</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Akses VIP në çdo event të Vetëdijes</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Mentorimi i marrëdhënieve dhe familjes</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Sesione private me secilin mentor</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Raport mujor i progresit personal</span></div>
+      </div>
+      <a href="mailto:hello@oneproject.me?subject=Vetëdija — Përtej vetvetes" class="pricing-btn pricing-btn-outline">Apliko tani</a>
+    </div>
+
+    <!-- TIER 4 — ENTERPRISE -->
+    <div class="pricing-card enterprise reveal reveal-delay-3">
+      <div class="pricing-tier">Jetëgjatë</div>
+      <h3 class="pricing-name">Partneriteti</h3>
+      <p class="pricing-tagline">Për liderë, sipërmarrës dhe vizionarë që duan ta ndërtojnë jetën dhe biznesin nga vetëdija.</p>
+      <div class="pricing-custom">Me ftesë</div>
+      <p class="pricing-price-note">Çmimi sipas programit individual</p>
+      <div class="pricing-divider"></div>
+      <div class="pricing-features">
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Gjithçka nga Përtej vetvetes — përgjithmonë</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Ndërtim biznesi në fushën e zhvillimit personal</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Mentorimi i ekipit dhe lidershipit tënd</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Akses jetëgjatë në të gjitha retreat-et dhe eventet</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Strategji personale për pozicionim publik</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Rrjet ekskluziv me liderë të tjerë</span></div>
+        <div class="pricing-feature"><span class="pf-icon">✦</span><span>Linjë 24/7 me kolektivin e plotë</span></div>
+      </div>
+      <a href="mailto:hello@oneproject.me?subject=Vetëdija — Partneriteti" class="pricing-btn pricing-btn-outline">Na kontakto</a>
+    </div>
+  </div>
+</section>
+
 <!-- ═══════ NUMBERS ═══════ -->
 <section class="numbers">
   <div class="numbers-grid">
@@ -2089,6 +2495,7 @@ body::after {
     <li><a href="#shtyllat">Shtyllat</a></li>
     <li><a href="#kolektivi">Kolektivi</a></li>
     <li><a href="#programet">Programet</a></li>
+    <li><a href="#investimi">Investimi</a></li>
   </ul>
   <span class="footer-copy">© 2026 Vetëdija</span>
 </footer>
