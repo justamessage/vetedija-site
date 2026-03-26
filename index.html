@@ -1,0 +1,2346 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VETËDIJA — Rruga drejt vetëdijes së vërtetë</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=DM+Sans:ital,wght@0,200;0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #FAF8F5;
+  --bg-warm: #F2EDE6;
+  --bg-dark: #111110;
+  --text: #1A1714;
+  --text-light: #FAFAF8;
+  --text-muted: #8A8279;
+  --accent: #8B7355;
+  --accent-warm: #C4A882;
+  --line: #DDD6CC;
+  --line-dark: rgba(250,248,245,0.1);
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.45, 0, 0.15, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+}
+
+html {
+  scroll-behavior: auto;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.6;
+  cursor: default;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* ═══════════════════════════════
+   CUSTOM CURSOR
+   ═══════════════════════════════ */
+.cursor {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  transition: width 0.3s var(--ease), height 0.3s var(--ease), border-color 0.3s, background 0.3s, transform 0.1s;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: difference;
+}
+
+.cursor.hover {
+  width: 48px;
+  height: 48px;
+  background: rgba(139,115,85,0.1);
+  border-color: var(--accent-warm);
+}
+
+/* ═══════════════════════════════
+   LOADING SCREEN
+   ═══════════════════════════════ */
+.loader {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-dark);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 32px;
+  transition: opacity 0.8s var(--ease), visibility 0.8s;
+}
+
+.loader.done {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-text {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 400;
+  color: var(--bg);
+  letter-spacing: 0.15em;
+  overflow: hidden;
+}
+
+.loader-text span {
+  display: inline-block;
+  transform: translateY(110%);
+  animation: loaderSlide 0.8s var(--ease) forwards;
+}
+
+.loader-text span:nth-child(1) { animation-delay: 0.1s; }
+.loader-text span:nth-child(2) { animation-delay: 0.15s; }
+.loader-text span:nth-child(3) { animation-delay: 0.2s; }
+.loader-text span:nth-child(4) { animation-delay: 0.25s; }
+.loader-text span:nth-child(5) { animation-delay: 0.3s; }
+.loader-text span:nth-child(6) { animation-delay: 0.35s; }
+.loader-text span:nth-child(7) { animation-delay: 0.4s; }
+.loader-text span:nth-child(8) { animation-delay: 0.45s; }
+
+.loader-bar {
+  width: 120px;
+  height: 1px;
+  background: rgba(250,248,245,0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.loader-bar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--accent-warm);
+  animation: loadBar 1.8s var(--ease-smooth) 0.5s forwards;
+}
+
+@keyframes loaderSlide {
+  to { transform: translateY(0); }
+}
+
+@keyframes loadBar {
+  to { width: 100%; }
+}
+
+/* ═══════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 28px 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.5s var(--ease);
+}
+
+nav.scrolled {
+  background: rgba(250,248,245,0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 18px 56px;
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 44px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.5s var(--ease);
+}
+
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover::after { width: 100%; }
+
+.nav-cta {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: var(--text) !important;
+  border: 1px solid var(--text);
+  padding: 10px 28px;
+  transition: all 0.4s var(--ease) !important;
+}
+
+.nav-cta:hover {
+  background: var(--text) !important;
+  color: var(--bg) !important;
+}
+
+.nav-cta::after { display: none !important; }
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 28px;
+  height: 18px;
+  position: relative;
+  z-index: 200;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 100%;
+  height: 1.5px;
+  background: var(--text);
+  position: absolute;
+  left: 0;
+  transition: all 0.4s var(--ease);
+}
+
+.nav-toggle span:nth-child(1) { top: 0; }
+.nav-toggle span:nth-child(2) { top: 50%; }
+.nav-toggle span:nth-child(3) { bottom: 0; }
+
+/* ═══════════════════════════════
+   HERO — CINEMATIC
+   ═══════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 48px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg-text {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: clamp(180px, 22vw, 360px);
+  font-weight: 700;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(139,115,85,0.07);
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: heroFade 1s var(--ease) 2.6s forwards;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 8vw, 110px);
+  font-weight: 400;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  margin-bottom: 32px;
+}
+
+.hero-title .word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  margin-right: 0.12em;
+}
+
+.hero-title .word span {
+  display: inline-block;
+  transform: translateY(110%);
+  opacity: 0;
+  animation: heroWordUp 1s var(--ease) forwards;
+}
+
+.hero-title .word:nth-child(1) span { animation-delay: 2.4s; }
+.hero-title .word:nth-child(2) span { animation-delay: 2.5s; }
+.hero-title .word:nth-child(3) span { animation-delay: 2.6s; }
+.hero-title .word:nth-child(4) span { animation-delay: 2.7s; }
+.hero-title .word:nth-child(5) span { animation-delay: 2.8s; }
+.hero-title .word:nth-child(6) span { animation-delay: 2.9s; }
+.hero-title .word:nth-child(7) span { animation-delay: 3.0s; }
+
+.hero-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-sub {
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--text-muted);
+  max-width: 520px;
+  margin: 0 auto 56px;
+  opacity: 0;
+  animation: heroFade 1s var(--ease) 3.1s forwards;
+}
+
+.hero-cta-group {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  opacity: 0;
+  animation: heroFade 1s var(--ease) 3.3s forwards;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--text);
+  padding: 18px 44px;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s var(--ease);
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s var(--ease);
+}
+
+.btn-primary:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.btn-primary span { position: relative; z-index: 1; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text);
+  padding: 18px 44px;
+  text-decoration: none;
+  border: 1px solid var(--line);
+  transition: all 0.4s var(--ease);
+}
+
+.btn-secondary:hover {
+  border-color: var(--text);
+  background: rgba(26,23,20,0.03);
+}
+
+.hero-scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  animation: heroFade 1s var(--ease) 3.6s forwards;
+}
+
+.scroll-mouse {
+  width: 24px;
+  height: 38px;
+  border: 1.5px solid var(--accent);
+  border-radius: 12px;
+  position: relative;
+}
+
+.scroll-mouse::after {
+  content: '';
+  width: 3px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 2px;
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: scrollPulse 2s var(--ease) infinite;
+}
+
+@keyframes heroWordUp {
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes heroFade {
+  to { opacity: 1; }
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 0.3; transform: translateX(-50%) translateY(10px); }
+}
+
+/* ═══════════════════════════════
+   REVEAL SYSTEM
+   ═══════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* ═══════════════════════════════
+   TRANSFORMATION — BEFORE / AFTER
+   ═══════════════════════════════ */
+.transformation {
+  padding: 160px 56px;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.transformation .section-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 80px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.transformation .section-label::before {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.transform-container {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  gap: 0;
+  align-items: stretch;
+  max-width: 1100px;
+  margin: 0 auto;
+  min-height: 520px;
+}
+
+.transform-side {
+  padding: 56px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.transform-before {
+  background: var(--bg-dark);
+  color: var(--text-light);
+  border-radius: 2px 0 0 2px;
+}
+
+.transform-after {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-left: none;
+  border-radius: 0 2px 2px 0;
+}
+
+.transform-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 5;
+}
+
+.divider-line {
+  width: 1px;
+  height: 100%;
+  background: var(--accent);
+  position: absolute;
+}
+
+.divider-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 4px 24px rgba(139,115,85,0.3);
+}
+
+.divider-arrow {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-right: 2px solid var(--bg);
+  border-top: 2px solid var(--bg);
+  transform: rotate(45deg) translateX(-2px);
+}
+
+.transform-tag {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.transform-before .transform-tag { color: rgba(250,248,245,0.35); }
+.transform-after .transform-tag { color: var(--accent); }
+
+.transform-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.transform-item {
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(250,248,245,0.06);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.6;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.6s var(--ease);
+}
+
+.transform-after .transform-item {
+  border-color: var(--line);
+  transform: translateX(20px);
+}
+
+.transform-item.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.transform-item .icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.transform-before .transform-item { color: rgba(250,248,245,0.5); }
+.transform-before .icon { color: rgba(250,248,245,0.2); }
+.transform-after .transform-item { color: var(--text); }
+.transform-after .icon { color: var(--accent); }
+
+/* Animated progress meter */
+.transform-meter {
+  margin-top: 80px;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.meter-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.meter-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.meter-track {
+  height: 3px;
+  background: var(--line);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.meter-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-warm) 100%);
+  border-radius: 2px;
+  transition: width 2s var(--ease-smooth);
+}
+
+.meter-fill.animate {
+  width: 100%;
+}
+
+.meter-dot {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: var(--accent-warm);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(196,168,130,0.2);
+  opacity: 0;
+  transition: opacity 0.4s 1.8s;
+}
+
+.meter-fill.animate .meter-dot {
+  opacity: 1;
+}
+
+.meter-phases {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  position: relative;
+}
+
+.meter-phase {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--line);
+  transition: color 1s var(--ease);
+  text-align: center;
+  flex: 1;
+}
+
+.meter-phase.lit {
+  color: var(--accent);
+}
+
+/* ═══════════════════════════════
+   PHILOSOPHY
+   ═══════════════════════════════ */
+.philosophy {
+  padding: 120px 56px;
+  background: var(--bg-warm);
+  position: relative;
+}
+
+.philosophy-top {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 40px;
+  align-items: start;
+  margin-bottom: 64px;
+}
+
+.philosophy-sidebar {
+  padding-top: 6px;
+}
+
+.philosophy-sidebar-num {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.philosophy-sidebar-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.philosophy-sidebar-line {
+  width: 28px;
+  height: 1px;
+  background: var(--accent);
+  margin-top: 16px;
+}
+
+.philosophy-mega {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4.5vw, 58px);
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.philosophy-mega .ph-line {
+  display: block;
+  overflow: hidden;
+  margin-bottom: 2px;
+}
+
+.philosophy-mega .ph-word {
+  display: inline-block;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.8s var(--ease), opacity 0.8s var(--ease);
+}
+
+.philosophy-mega .ph-word.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.philosophy-mega em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.philosophy-mega .muted {
+  color: var(--text-muted);
+}
+
+.philosophy-body {
+  display: grid;
+  grid-template-columns: 180px 1fr 1fr;
+  gap: 40px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+
+.philosophy-body-spacer {}
+
+.philosophy-col h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  line-height: 1.3;
+}
+
+.philosophy-col h3 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.philosophy-col p {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.85;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.philosophy-col p:last-child { margin-bottom: 0; }
+
+.philosophy-principles {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 28px;
+}
+
+.principle {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.principle:first-child { border-top: 1px solid var(--line); }
+
+.principle-num {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--accent);
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.principle-text {
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.principle-text strong { font-weight: 500; }
+
+@media (max-width: 1024px) {
+  .philosophy-top { grid-template-columns: 1fr; gap: 20px; }
+  .philosophy-body { grid-template-columns: 1fr 1fr; gap: 40px; }
+  .philosophy-body-spacer { display: none; }
+}
+
+@media (max-width: 768px) {
+  .philosophy { padding: 80px 24px; }
+  .philosophy-top { grid-template-columns: 1fr; }
+  .philosophy-sidebar { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .philosophy-sidebar-line { display: none; }
+  .philosophy-sidebar-title { font-size: 22px; }
+  .philosophy-body { grid-template-columns: 1fr; gap: 36px; }
+  .philosophy-body-spacer { display: none; }
+}
+
+
+/* ═══════════════════════════════
+   HORIZONTAL SCROLL — PILLARS
+   ═══════════════════════════════ */
+.pillars-section {
+  background: var(--bg-dark);
+  position: relative;
+}
+
+.pillars-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.pillars-header {
+  padding: 0 56px;
+  margin-bottom: 56px;
+}
+
+.pillars-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.pillars-label::before {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: var(--accent-warm);
+}
+
+.pillars-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 400;
+  color: var(--text-light);
+  line-height: 1.2;
+}
+
+.pillars-track-wrapper {
+  overflow: clip;
+  padding: 0 56px;
+}
+
+.pillars-track {
+  display: flex;
+  gap: 16px;
+  will-change: transform;
+}
+
+.pillar-card {
+  min-width: 380px;
+  max-width: 380px;
+  background: rgba(250,248,245,0.04);
+  border: 1px solid rgba(250,248,245,0.06);
+  padding: 48px 40px;
+  flex-shrink: 0;
+  transition: all 0.5s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+
+.pillar-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease);
+}
+
+.pillar-card:hover {
+  background: rgba(250,248,245,0.07);
+  border-color: rgba(139,115,85,0.2);
+  transform: translateY(-4px);
+}
+
+.pillar-card:hover::before {
+  transform: scaleX(1);
+}
+
+.pillar-num {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 400;
+  color: rgba(250,248,245,0.06);
+  line-height: 1;
+  margin-bottom: 32px;
+  transition: color 0.5s;
+}
+
+.pillar-card:hover .pillar-num {
+  color: rgba(139,115,85,0.3);
+}
+
+.pillar-name {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--text-light);
+  margin-bottom: 20px;
+  line-height: 1.3;
+}
+
+.pillar-desc {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.8;
+  color: rgba(250,248,245,0.45);
+}
+
+.pillar-keyword {
+  margin-top: 32px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  padding-top: 24px;
+  border-top: 1px solid rgba(250,248,245,0.06);
+}
+
+/* ═══════════════════════════════
+   TEAM
+   ═══════════════════════════════ */
+.team {
+  padding: 160px 56px;
+  background: var(--bg);
+}
+
+.team-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  margin-bottom: 100px;
+  align-items: end;
+}
+
+.team-heading {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 60px);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.team-heading em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.team-intro {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--text-muted);
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.member {
+  position: relative;
+  overflow: hidden;
+}
+
+.member-photo {
+  aspect-ratio: 3/4;
+  margin-bottom: 28px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.5s var(--ease);
+}
+
+.member-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.85);
+  transition: filter 0.5s var(--ease), transform 0.6s var(--ease);
+}
+
+.member:hover .member-photo img {
+  filter: saturate(1);
+  transform: scale(1.03);
+}
+
+.member:hover .member-photo {
+  /* image scales inside via img:hover */
+}
+
+.member-photo-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.member-photo-inner .initials {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 400;
+  color: rgba(26,23,20,0.12);
+  letter-spacing: 0.08em;
+}
+
+.member-photo-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(to top, rgba(26,23,20,0.6), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
+}
+
+.member:hover .member-photo-overlay { opacity: 1; }
+
+.member-photo-overlay span {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--bg);
+}
+
+.member-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.member-role {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.member-bio {
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════
+   OFFERINGS
+   ═══════════════════════════════ */
+.offerings {
+  padding: 160px 56px;
+  background: var(--bg-warm);
+}
+
+.offerings-header {
+  margin-bottom: 80px;
+}
+
+.offerings-heading {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.offerings-heading em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.offering-row {
+  display: grid;
+  grid-template-columns: 280px 1fr auto;
+  gap: 48px;
+  padding: 48px 0;
+  border-top: 1px solid var(--line);
+  align-items: center;
+  transition: all 0.4s var(--ease);
+  cursor: default;
+}
+
+.offering-row:last-child { border-bottom: 1px solid var(--line); }
+
+.offering-row:hover {
+  padding-left: 24px;
+}
+
+.offering-num-name {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+}
+
+.offering-num {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--accent);
+}
+
+.offering-name {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.offering-desc {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--text-muted);
+  max-width: 480px;
+}
+
+.offering-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.offering-tag {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+  transition: all 0.3s;
+}
+
+.offering-row:hover .offering-tag {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ═══════════════════════════════
+   NUMBERS — ANIMATED
+   ═══════════════════════════════ */
+.numbers {
+  padding: 120px 56px;
+  background: var(--bg);
+}
+
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.number-item {
+  text-align: center;
+  padding: 48px 24px;
+  position: relative;
+}
+
+.number-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 25%;
+  height: 50%;
+  width: 1px;
+  background: var(--line);
+}
+
+.number-value {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 7vw, 88px);
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.number-label {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════
+   EBOOK FREEBIE
+   ═══════════════════════════════ */
+.ebook {
+  padding: 160px 56px;
+  background: var(--bg-warm);
+  position: relative;
+  overflow: hidden;
+}
+
+.ebook-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.ebook-visual {
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.ebook-cover {
+  width: 280px;
+  height: 400px;
+  background: var(--bg-dark);
+  border-radius: 2px;
+  box-shadow: 24px 24px 60px rgba(26,23,20,0.15), 0 0 0 1px rgba(26,23,20,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 36px;
+  text-align: center;
+  position: relative;
+  transform: rotate(-2deg);
+  transition: transform 0.6s var(--ease);
+}
+
+.ebook-cover:hover {
+  transform: rotate(0deg) translateY(-8px);
+}
+
+.ebook-cover::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+  background: linear-gradient(to bottom, rgba(139,115,85,0.1), rgba(139,115,85,0.3), rgba(139,115,85,0.1));
+  border-radius: 0 2px 2px 0;
+}
+
+.ebook-cover-label {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  margin-bottom: 40px;
+}
+
+.ebook-cover-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--text-light);
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+.ebook-cover-title em {
+  display: block;
+  font-size: 20px;
+  font-style: italic;
+  color: var(--accent-warm);
+  margin-top: 8px;
+}
+
+.ebook-cover-brand {
+  margin-top: auto;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  color: rgba(250,248,245,0.2);
+  text-transform: uppercase;
+}
+
+.ebook-badge {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  width: 72px;
+  height: 72px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bg);
+  box-shadow: 0 4px 16px rgba(139,115,85,0.3);
+}
+
+.ebook-content {}
+
+.ebook-hook {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 400;
+  line-height: 1.25;
+  margin-bottom: 24px;
+}
+
+.ebook-hook em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.ebook-desc {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--text-muted);
+  margin-bottom: 40px;
+  max-width: 460px;
+}
+
+.ebook-form {
+  display: flex;
+  gap: 0;
+  max-width: 440px;
+}
+
+.ebook-input {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 18px 24px;
+  border: 1px solid var(--line);
+  border-right: none;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.ebook-input::placeholder {
+  color: var(--text-muted);
+}
+
+.ebook-input:focus {
+  border-color: var(--accent);
+}
+
+.ebook-submit {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--text);
+  border: 1px solid var(--text);
+  padding: 18px 32px;
+  cursor: pointer;
+  transition: all 0.4s var(--ease);
+  white-space: nowrap;
+}
+
+.ebook-submit:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.ebook-note {
+  margin-top: 16px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .ebook { padding: 100px 24px; }
+  .ebook-grid { grid-template-columns: 1fr; gap: 48px; text-align: center; }
+  .ebook-form { flex-direction: column; max-width: 100%; }
+  .ebook-input { border-right: 1px solid var(--line); border-bottom: none; }
+  .ebook-desc { margin-left: auto; margin-right: auto; }
+  .ebook-cover { width: 220px; height: 310px; padding: 32px 24px; }
+  .ebook-cover-title { font-size: 22px; }
+}
+
+/* ═══════════════════════════════
+   FINAL CTA
+   ═══════════════════════════════ */
+.cta-final {
+  padding: 200px 56px;
+  background: var(--bg-dark);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-final::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139,115,85,0.08) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cta-final-heading {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 84px);
+  font-weight: 400;
+  color: var(--text-light);
+  line-height: 1.1;
+  max-width: 800px;
+  margin: 0 auto 24px;
+  position: relative;
+}
+
+.cta-final-heading em {
+  font-style: italic;
+  color: var(--accent-warm);
+}
+
+.cta-final-sub {
+  font-size: 16px;
+  font-weight: 300;
+  color: rgba(250,248,245,0.4);
+  max-width: 460px;
+  margin: 0 auto 64px;
+  line-height: 1.8;
+}
+
+.cta-final .btn-primary {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.cta-final .btn-primary:hover {
+  color: var(--bg);
+}
+
+/* ═══════════════════════════════
+   FOOTER
+   ═══════════════════════════════ */
+footer {
+  background: var(--bg-dark);
+  border-top: 1px solid rgba(250,248,245,0.05);
+  padding: 48px 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--text-light);
+}
+
+.footer-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.footer-links a {
+  font-size: 11px;
+  color: rgba(250,248,245,0.3);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover { color: var(--text-light); }
+
+.footer-copy {
+  font-size: 11px;
+  color: rgba(250,248,245,0.15);
+}
+
+.footer-note {
+  background: var(--bg-dark);
+  text-align: center;
+  padding: 16px 56px;
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: rgba(250,248,245,0.12);
+  border-top: 1px solid rgba(250,248,245,0.03);
+}
+
+/* ═══════════════════════════════
+   GRAIN OVERLAY
+   ═══════════════════════════════ */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.02;
+  z-index: 9998;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px;
+}
+
+/* ═══════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════ */
+@media (max-width: 1024px) {
+  .transform-container { grid-template-columns: 1fr; min-height: auto; }
+  .transform-before { border-radius: 2px 2px 0 0; }
+  .transform-after { border-radius: 0 0 2px 2px; border-left: 1px solid var(--line); }
+  .transform-divider { padding: 0; height: 64px; }
+  .divider-line { width: 100%; height: 1px; }
+  .divider-arrow { transform: rotate(135deg) translateX(-2px); }
+  .team-grid { grid-template-columns: repeat(2, 1fr); }
+  .team-header { grid-template-columns: 1fr; gap: 32px; }
+  .offering-row { grid-template-columns: 1fr; gap: 16px; }
+  .offering-tags { justify-content: flex-start; }
+  .pillar-card { min-width: 300px; max-width: 300px; }
+}
+
+@media (max-width: 768px) {
+  nav { padding: 20px 24px; }
+  nav.scrolled { padding: 14px 24px; }
+  .nav-links { display: none; }
+  .nav-toggle { display: block; }
+  
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    z-index: 150;
+  }
+
+  .nav-links.open a { color: var(--text); font-size: 16px; }
+
+  section, .transformation, .philosophy, .team, .offerings, .numbers {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .hero { padding: 100px 24px 60px; }
+  .hero-cta-group { flex-direction: column; align-items: center; }
+  .hero-scroll-indicator { display: none; }
+
+  .transform-side { padding: 36px 28px; }
+  .numbers-grid { grid-template-columns: repeat(2, 1fr); }
+  .number-item:nth-child(2)::after { display: none; }
+  .team-grid { grid-template-columns: 1fr; max-width: 400px; }
+  
+  .pillars-header { padding: 0 24px; }
+  .pillars-track-wrapper { padding: 0 24px; }
+  .pillar-card { min-width: 280px; max-width: 280px; padding: 36px 28px; }
+
+  .cta-final { padding: 120px 24px; }
+  footer { flex-direction: column; gap: 24px; text-align: center; padding: 40px 24px; }
+  .footer-links { flex-wrap: wrap; justify-content: center; }
+  
+  .cursor { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ CUSTOM CURSOR ═══════ -->
+<div class="cursor" id="cursor"></div>
+
+<!-- ═══════ LOADER ═══════ -->
+<div class="loader" id="loader">
+  <div class="loader-text">
+    <span>V</span><span>E</span><span>T</span><span>Ë</span><span>D</span><span>I</span><span>J</span><span>A</span>
+  </div>
+  <div class="loader-bar"></div>
+</div>
+
+<!-- ═══════ NAVIGATION ═══════ -->
+<nav id="nav">
+  <a href="#" class="nav-logo">VETËDIJA</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#transformimi">Transformimi</a></li>
+    <li><a href="#filozofia">Filozofia</a></li>
+    <li><a href="#shtyllat">Shtyllat</a></li>
+    <li><a href="#kolektivi">Kolektivi</a></li>
+    <li><a href="#programet">Programet</a></li>
+    <li><a href="#kontakt" class="nav-cta">Kontakt</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-bg-text">VETËDIJA</div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Kolektivi për zhvillim të brendshëm</p>
+    <h1 class="hero-title">
+      <span class="word"><span>Rruga</span></span>
+      <span class="word"><span>drejt</span></span>
+      <span class="word"><span>vetes</span></span>
+      <span class="word"><span>së</span></span>
+      <span class="word"><span><em>vërtetë.</em></span></span>
+    </h1>
+    <p class="hero-sub">
+      Nuk të mësojmë si ta ndryshosh jetën. Të ndihmojmë ta shohësh ashtu siç është — dhe prej aty, gjithçka ndryshon vetvetiu.
+    </p>
+    <div class="hero-cta-group">
+      <a href="#kontakt" class="btn-primary"><span>Fillo rrugëtimin</span></a>
+      <a href="#transformimi" class="btn-secondary"><span>Zbulo më shumë</span></a>
+    </div>
+  </div>
+  <div class="hero-scroll-indicator">
+    <div class="scroll-mouse"></div>
+  </div>
+</section>
+
+<!-- ═══════ TRANSFORMATION — BEFORE / AFTER ═══════ -->
+<section class="transformation" id="transformimi">
+  <div class="section-label reveal">Transformimi</div>
+
+  <div class="transform-container reveal">
+    <div class="transform-side transform-before">
+      <div class="transform-tag">Pa Vetëdija</div>
+      <div class="transform-items" id="beforeItems">
+        <div class="transform-item">
+          <span class="icon">—</span>
+          <span>Reagon ndaj jetës me frikë dhe mbrojtje</span>
+        </div>
+        <div class="transform-item">
+          <span class="icon">—</span>
+          <span>Kërkon vlerësim nga të tjerët për tu ndier i vlefshëm</span>
+        </div>
+        <div class="transform-item">
+          <span class="icon">—</span>
+          <span>Identifikohet me rolin, titullin dhe imazhin</span>
+        </div>
+        <div class="transform-item">
+          <span class="icon">—</span>
+          <span>Ikën nga dhimbja përmes shpërqendrimit</span>
+        </div>
+        <div class="transform-item">
+          <span class="icon">—</span>
+          <span>Jeton në auto-pilot — pa e vërejtur</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="transform-divider">
+      <div class="divider-line"></div>
+      <div class="divider-circle">
+        <div class="divider-arrow"></div>
+      </div>
+    </div>
+
+    <div class="transform-side transform-after">
+      <div class="transform-tag">Me Vetëdija</div>
+      <div class="transform-items" id="afterItems">
+        <div class="transform-item">
+          <span class="icon">✦</span>
+          <span>Përgjigjet me qartësi dhe qetësi të brendshme</span>
+        </div>
+        <div class="transform-item">
+          <span class="icon">✦</span>
+          <span>Njeh vlerën e vet pa nevojën e konfirmimit</span>
+        </div>
+        <div class="transform-item">
+          <span class="icon">✦</span>
+          <span>Di kush është — përtej çdo etikete</span>
+        </div>
+        <div class="transform-item">
+          <span class="icon">✦</span>
+          <span>Përballon dhimbjen si mësues, jo si armik</span>
+        </div>
+        <div class="transform-item">
+          <span class="icon">✦</span>
+          <span>Jeton me vetëdije — çdo moment, me qëllim</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANIMATED METER -->
+  <div class="transform-meter reveal">
+    <div class="meter-labels">
+      <span class="meter-label">Gjumi</span>
+      <span class="meter-label">Zgjimi</span>
+    </div>
+    <div class="meter-track">
+      <div class="meter-fill" id="meterFill">
+        <div class="meter-dot"></div>
+      </div>
+    </div>
+    <div class="meter-phases" id="meterPhases">
+      <span class="meter-phase" data-delay="400">Vetëpranimi</span>
+      <span class="meter-phase" data-delay="800">Vetëvëzhgimi</span>
+      <span class="meter-phase" data-delay="1200">Vetënjohja</span>
+      <span class="meter-phase" data-delay="1600">Përtej vetvetes</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PHILOSOPHY ═══════ -->
+<section class="philosophy" id="filozofia">
+  <div class="philosophy-top">
+    <div class="philosophy-sidebar reveal">
+      <div class="philosophy-sidebar-num">02</div>
+      <div class="philosophy-sidebar-title">Filozofia</div>
+      <div class="philosophy-sidebar-line"></div>
+    </div>
+    <div class="philosophy-mega" id="philo">
+      <span class="ph-line">
+        <span class="ph-word">Bota</span>
+        <span class="ph-word">nuk</span>
+        <span class="ph-word">ka</span>
+        <span class="ph-word">nevojë</span>
+        <span class="ph-word">për</span>
+      </span>
+      <span class="ph-line">
+        <span class="ph-word muted">motivatorë</span>
+        <span class="ph-word muted">të</span>
+        <span class="ph-word muted">tjerë.</span>
+      </span>
+      <span class="ph-line" style="margin-top: 16px;">
+        <span class="ph-word">Ka</span>
+        <span class="ph-word">nevojë</span>
+        <span class="ph-word">për</span>
+        <span class="ph-word">njerëz</span>
+        <span class="ph-word">që</span>
+      </span>
+      <span class="ph-line">
+        <span class="ph-word"><em>guxojnë</em></span>
+        <span class="ph-word">të</span>
+        <span class="ph-word">jenë</span>
+        <span class="ph-word"><em>të</em></span>
+        <span class="ph-word"><em>vërtetë.</em></span>
+      </span>
+    </div>
+  </div>
+
+  <div class="philosophy-body">
+    <div class="philosophy-body-spacer"></div>
+    <div class="philosophy-col reveal">
+      <h3>Çfarë <em>nuk</em> jemi</h3>
+      <p>Nuk jemi motivatorë. Nuk premtojmë se jeta jote do të ndryshojë brenda 21 ditëve. Nuk besojmë se fjalët pozitive para pasqyrës mund të zëvendësojnë punën e vërtetë me veten.</p>
+      <p>Nuk shesim ëndrra. Nuk mësojmë manifestim. Nuk themi "mendo pozitivisht dhe gjithçka rregullohet" — sepse kjo është gënjeshtra më e bukur që mund ta tregosh.</p>
+
+      <h3 style="margin-top: 36px;">Çfarë <em>jemi</em></h3>
+      <p>Jemi njerëz që kanë ecur rrugën e vetëdijes — me dhimbje, me gabime, me humbje. Dhe pikërisht kjo përvojë na jep të drejtën të flasim. Jo nga teoria. Jo nga librat. Nga jeta.</p>
+      <p>Besojmë se transformimi i vërtetë nuk vjen nga shtimi i diçkaje — vjen nga heqja e shtresave të rreme që kemi ndërtuar rreth vetes.</p>
+    </div>
+    <div class="philosophy-col reveal reveal-delay-2">
+      <h3>Parimet <em>tona</em></h3>
+      <div class="philosophy-principles">
+        <div class="principle">
+          <span class="principle-num">i.</span>
+          <span class="principle-text"><strong>E vërteta para komoditetit.</strong> Nuk të themi atë që dëshiron ta dëgjosh. Të themi atë që ke nevojë ta dëgjosh.</span>
+        </div>
+        <div class="principle">
+          <span class="principle-num">ii.</span>
+          <span class="principle-text"><strong>Praktika para teorisë.</strong> Çdo koncept duhet të jetohet, jo vetëm të kuptohet. Njohuria pa përvojë është thjesht informacion.</span>
+        </div>
+        <div class="principle">
+          <span class="principle-num">iii.</span>
+          <span class="principle-text"><strong>Procesi para rezultatit.</strong> Nuk matemi me arritje të jashtme. Matemi me ndershmëri të brendshme.</span>
+        </div>
+        <div class="principle">
+          <span class="principle-num">iv.</span>
+          <span class="principle-text"><strong>Komuniteti para individit.</strong> Askush nuk zgjohet vetëm. Rrugëtimi bëhet bashkë — ose nuk bëhet fare.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════ HORIZONTAL PILLARS ═══════ -->
+<div class="pillars-section" id="shtyllat" style="height: 400vh;">
+  <div class="pillars-sticky">
+    <div class="pillars-header">
+      <div class="pillars-label">Katër shtyllat</div>
+      <h2 class="pillars-title">Çdo transformim i vërtetë kalon<br>nëpër katër faza.</h2>
+    </div>
+    <div class="pillars-track-wrapper">
+      <div class="pillars-track" id="pillarsTrack">
+        <div class="pillar-card">
+          <div class="pillar-num">01</div>
+          <h3 class="pillar-name">Vetëpranimi</h3>
+          <p class="pillar-desc">Faza e parë kërkon guxim — pranimin e plotë të asaj që je pa asnjë kusht. Jo motivim, jo ndryshim. Thjesht pranim i thellë, radikal, i pakompromis.</p>
+          <div class="pillar-keyword">Çelësi: Falja</div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">02</div>
+          <h3 class="pillar-name">Vetëvëzhgimi</h3>
+          <p class="pillar-desc">Mësohesh ta vëzhgosh mendjen, emocionet, reagimet — pa i gjykuar. Bëhesh dëshmitari i jetës sate, jo viktima e saj.</p>
+          <div class="pillar-keyword">Çelësi: Vëmendshmëria</div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">03</div>
+          <h3 class="pillar-name">Vetënjohja</h3>
+          <p class="pillar-desc">Kur vëzhgon pa gjykim, nis ta kuptosh kush je vërtet — përtej roleve, maskave, dhe besimeve që ke marrë nga të tjerët.</p>
+          <div class="pillar-keyword">Çelësi: Ndershmëria radikale</div>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">04</div>
+          <h3 class="pillar-name">Përtej vetvetes</h3>
+          <p class="pillar-desc">Faza e fundit nuk është arritje — është zhdukje. Kur vetja e rreme shpërbëhet, mbetet vetëm ajo që ka qenë gjithmonë e vërtetë.</p>
+          <div class="pillar-keyword">Çelësi: Dorëzimi</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ TEAM ═══════ -->
+<section class="team" id="kolektivi">
+  <div class="section-label reveal">Kolektivi</div>
+  <div class="team-header">
+    <h2 class="team-heading reveal">Nuk jemi <em>guru.</em><br>Jemi bashkëudhëtarë.</h2>
+    <p class="team-intro reveal reveal-delay-1">Çdonjëri prej nesh ka ecur rrugën e vetëdijes — me gabime, me humbje, me zgjedhje të vështira. Pikërisht kjo na bën të besueshëm. Nuk flasim nga teoria — flasim nga jeta.</p>
+  </div>
+  <div class="team-grid">
+    <div class="member reveal reveal-delay-1">
+      <div class="member-photo">
+        <img src="img/arben.jpg" alt="Arben Hoxha" loading="lazy">
+        <div class="member-photo-overlay"><span>Zbulo më shumë →</span></div>
+      </div>
+      <h3 class="member-name">Arben Hoxha</h3>
+      <p class="member-role">Mentorimi & Udhëheqja</p>
+      <p class="member-bio">12 vjet përvojë në zhvillimin e lidershipit dhe vetëdijes organizative.</p>
+    </div>
+    <div class="member reveal reveal-delay-2">
+      <div class="member-photo">
+        <img src="img/elona.jpg" alt="Elona Kastrati" loading="lazy">
+        <div class="member-photo-overlay"><span>Zbulo më shumë →</span></div>
+      </div>
+      <h3 class="member-name">Elona Kastrati</h3>
+      <p class="member-role">Psikologjia & Pranimit</p>
+      <p class="member-bio">Specialiste e psikologjisë me fokus në pranimin radikal dhe punën me traumën.</p>
+    </div>
+    <div class="member reveal reveal-delay-3">
+      <div class="member-photo">
+        <img src="img/driton.jpg" alt="Driton Berisha" loading="lazy">
+        <div class="member-photo-overlay"><span>Zbulo më shumë →</span></div>
+      </div>
+      <h3 class="member-name">Driton Berisha</h3>
+      <p class="member-role">Meditimi & Praktika</p>
+      <p class="member-bio">Praktikant i meditimit prej 15 vjetësh dhe trajner i vetëvëzhgimit kontemplativ.</p>
+    </div>
+    <div class="member reveal reveal-delay-4">
+      <div class="member-photo">
+        <img src="img/vlora.jpg" alt="Vlora Gashi" loading="lazy">
+        <div class="member-photo-overlay"><span>Zbulo më shumë →</span></div>
+      </div>
+      <h3 class="member-name">Vlora Gashi</h3>
+      <p class="member-role">Zhvillimi i brendshëm</p>
+      <p class="member-bio">Autore dhe mentore e njohur në rritjen personale dhe marrëdhëniet e ndërgjegjshme.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ OFFERINGS ═══════ -->
+<section class="offerings" id="programet">
+  <div class="offerings-header">
+    <div class="section-label reveal">Programet</div>
+    <h2 class="offerings-heading reveal">Rrugëtime të ndryshme.<br>E njëjta destinacion: <em>e vërteta.</em></h2>
+  </div>
+
+  <div class="offering-row reveal">
+    <div class="offering-num-name">
+      <span class="offering-num">i.</span>
+      <span class="offering-name">Mentorimi 1:1</span>
+    </div>
+    <div class="offering-desc">Punë individuale me një nga mentorët tanë. Pa skript, pa formula — thjesht ndershmëri e thellë dhe udhëzim i drejtpërdrejtë.</div>
+    <div class="offering-tags">
+      <span class="offering-tag">Online</span>
+      <span class="offering-tag">Në person</span>
+    </div>
+  </div>
+
+  <div class="offering-row reveal">
+    <div class="offering-num-name">
+      <span class="offering-num">ii.</span>
+      <span class="offering-name">Programet në grup</span>
+    </div>
+    <div class="offering-desc">Programe intensive 8–12 javore ku grupi bëhet pasqyrë. Çdo pjesëmarrës sheh veten përmes të tjerëve.</div>
+    <div class="offering-tags">
+      <span class="offering-tag">8–12 javë</span>
+      <span class="offering-tag">Max 12 persona</span>
+    </div>
+  </div>
+
+  <div class="offering-row reveal">
+    <div class="offering-num-name">
+      <span class="offering-num">iii.</span>
+      <span class="offering-name">Kurse online</span>
+    </div>
+    <div class="offering-desc">Përmbajtje e strukturuar për ata që duan të fillojnë vetë. Video, ushtrime, dhe reflektime të udhëhequra.</div>
+    <div class="offering-tags">
+      <span class="offering-tag">Vetë-ritëm</span>
+      <span class="offering-tag">Video</span>
+    </div>
+  </div>
+
+  <div class="offering-row reveal">
+    <div class="offering-num-name">
+      <span class="offering-num">iv.</span>
+      <span class="offering-name">Komuniteti</span>
+    </div>
+    <div class="offering-desc">Hapësirë e sigurt ku rrugëtimi nuk bëhet vetëm. Biseda javore, mbështetje reciproke, ndershmëri pa filtra.</div>
+    <div class="offering-tags">
+      <span class="offering-tag">Anëtarësim</span>
+      <span class="offering-tag">Javore</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ NUMBERS ═══════ -->
+<section class="numbers">
+  <div class="numbers-grid">
+    <div class="number-item reveal reveal-delay-1">
+      <div class="number-value" data-target="6">0</div>
+      <div class="number-label">Mentorë</div>
+    </div>
+    <div class="number-item reveal reveal-delay-2">
+      <div class="number-value" data-target="800" data-suffix="+">0</div>
+      <div class="number-label">Jetë të prekura</div>
+    </div>
+    <div class="number-item reveal reveal-delay-3">
+      <div class="number-value" data-target="4">0</div>
+      <div class="number-label">Faza transformimi</div>
+    </div>
+    <div class="number-item reveal reveal-delay-4">
+      <div class="number-value" data-target="1">0</div>
+      <div class="number-label">E vërtetë</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ EBOOK FREEBIE ═══════ -->
+<section class="ebook" id="ebook">
+  <div class="ebook-grid">
+    <div class="ebook-visual reveal">
+      <div class="ebook-cover">
+        <div class="ebook-badge">Falas</div>
+        <span class="ebook-cover-label">Vetëdija</span>
+        <div class="ebook-cover-title">A e njeh<br>të vërtetën?<em>Apo beson atë që të kanë mësuar?</em></div>
+        <span class="ebook-cover-brand">E-Book</span>
+      </div>
+    </div>
+    <div class="ebook-content">
+      <div class="section-label reveal">E-Book falas</div>
+      <h2 class="ebook-hook reveal">A e njeh <em>të vërtetën?</em><br>Apo thjesht beson atë që të kanë mësuar se është e vërtetë?</h2>
+      <p class="ebook-desc reveal reveal-delay-1">Ky libër i shkurtër do të të tregojë pse shumica e njerëzve jetojnë në shtresë pas shtrese iluzionesh — dhe si mund ta nisësh rrugën drejt vetëdijes së vërtetë. Pa motivim bosh. Pa premtime. Vetëm e vërteta.</p>
+      <div class="ebook-form reveal reveal-delay-2" id="ebookForm">
+        <input type="email" class="ebook-input" id="ebookEmail" placeholder="Email-i yt" aria-label="Email">
+        <button class="ebook-submit" id="ebookSubmit">Shkarko tani</button>
+      </div>
+      <p class="ebook-note reveal reveal-delay-3" id="ebookNote">Pa spam. Pa marrëzi. Vetëm vlera.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FINAL CTA ═══════ -->
+<section class="cta-final" id="kontakt">
+  <div class="reveal">
+    <h2 class="cta-final-heading">Gati të fillosh<br><em>rrugëtimin?</em></h2>
+    <p class="cta-final-sub">Hapi i parë nuk kërkon guxim të jashtëzakonshëm. Kërkon vetëm ndershmëri — me veten.</p>
+    <a href="mailto:kontakt@vetedija.com" class="btn-primary"><span>Na kontakto</span></a>
+  </div>
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer>
+  <div class="footer-logo">VETËDIJA</div>
+  <ul class="footer-links">
+    <li><a href="#transformimi">Transformimi</a></li>
+    <li><a href="#filozofia">Filozofia</a></li>
+    <li><a href="#shtyllat">Shtyllat</a></li>
+    <li><a href="#kolektivi">Kolektivi</a></li>
+    <li><a href="#programet">Programet</a></li>
+  </ul>
+  <span class="footer-copy">© 2026 Vetëdija</span>
+</footer>
+<div class="footer-note">Imazhet e mentorëve janë krijuar me inteligjencë artificiale profesionale dhe nuk paraqesin persona reale.</div>
+
+<!-- ═══════ SCRIPTS ═══════ -->
+<script>
+// ——— LOADER ———
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('done');
+  }, 2200);
+});
+
+// ——— CUSTOM CURSOR ———
+const cursor = document.getElementById('cursor');
+let cursorX = 0, cursorY = 0, currentX = 0, currentY = 0;
+
+document.addEventListener('mousemove', e => {
+  cursorX = e.clientX;
+  cursorY = e.clientY;
+});
+
+function animateCursor() {
+  currentX += (cursorX - currentX) * 0.15;
+  currentY += (cursorY - currentY) * 0.15;
+  cursor.style.left = currentX + 'px';
+  cursor.style.top = currentY + 'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+document.querySelectorAll('a, button, .pillar-card, .member, .offering-row').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+// ——— NAV SCROLL ———
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ——— MOBILE NAV ———
+const toggle = document.getElementById('navToggle');
+const links = document.getElementById('navLinks');
+toggle.addEventListener('click', () => links.classList.toggle('open'));
+links.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => links.classList.remove('open'));
+});
+
+// ——— REVEAL ON SCROLL ———
+const reveals = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+
+reveals.forEach(el => revealObserver.observe(el));
+
+// ——— PHILOSOPHY WORD-BY-WORD ———
+const phWords = document.querySelectorAll('.ph-word');
+const phObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const words = entry.target.closest('.philosophy-mega').querySelectorAll('.ph-word');
+      words.forEach((w, i) => {
+        setTimeout(() => w.classList.add('visible'), i * 80);
+      });
+      phObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.2 });
+
+if (phWords.length) phObserver.observe(phWords[0]);
+
+// ——— BEFORE/AFTER ITEMS ANIMATION ———
+const transformSection = document.querySelector('.transformation');
+const transformItems = document.querySelectorAll('.transform-item');
+const transformObserver = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) {
+    transformItems.forEach((item, i) => {
+      setTimeout(() => item.classList.add('visible'), i * 120);
+    });
+    transformObserver.unobserve(transformSection);
+  }
+}, { threshold: 0.2 });
+
+transformObserver.observe(transformSection);
+
+// ——— METER ANIMATION ———
+const meterFill = document.getElementById('meterFill');
+const meterPhases = document.querySelectorAll('.meter-phase');
+const meterObserver = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) {
+    meterFill.classList.add('animate');
+    meterPhases.forEach(phase => {
+      const delay = parseInt(phase.dataset.delay);
+      setTimeout(() => phase.classList.add('lit'), delay);
+    });
+    meterObserver.unobserve(meterFill.parentElement);
+  }
+}, { threshold: 0.5 });
+
+meterObserver.observe(meterFill.parentElement);
+
+// ——— HORIZONTAL SCROLL PILLARS ———
+const pillarsSection = document.querySelector('.pillars-section');
+const pillarsTrack = document.getElementById('pillarsTrack');
+
+if (pillarsSection && pillarsTrack) {
+  let ticking = false;
+  
+  function updatePillars() {
+    const rect = pillarsSection.getBoundingClientRect();
+    const sectionHeight = pillarsSection.offsetHeight;
+    const viewportHeight = window.innerHeight;
+    const scrollable = sectionHeight - viewportHeight;
+    
+    if (scrollable <= 0) return;
+    
+    if (rect.top <= 0 && rect.bottom >= viewportHeight) {
+      const scrolled = Math.abs(rect.top);
+      const progress = Math.min(Math.max(scrolled / scrollable, 0), 1);
+      const trackScrollWidth = pillarsTrack.scrollWidth;
+      const wrapperWidth = pillarsTrack.parentElement.clientWidth;
+      const maxTranslate = trackScrollWidth - wrapperWidth;
+      
+      if (maxTranslate > 0) {
+        const translateX = -(progress * maxTranslate);
+        pillarsTrack.style.transform = `translateX(${translateX}px)`;
+      }
+    } else if (rect.top > 0) {
+      pillarsTrack.style.transform = `translateX(0px)`;
+    }
+    
+    ticking = false;
+  }
+  
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(updatePillars);
+      ticking = true;
+    }
+  }, { passive: true });
+}
+
+// ——— NUMBER COUNTER ———
+const numberEls = document.querySelectorAll('.number-value[data-target]');
+const numObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = parseInt(el.dataset.target);
+      const suffix = el.dataset.suffix || '';
+      let current = 0;
+      const duration = 1600;
+      const step = 16;
+      const totalSteps = duration / step;
+      const increment = target / totalSteps;
+
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        el.textContent = Math.floor(current) + suffix;
+      }, step);
+
+      numObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+
+numberEls.forEach(el => numObserver.observe(el));
+
+// ——— SMOOTH SCROLL FOR ANCHORS ———
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// ——— BREVO FORM SUBMISSION ———
+async function handleSubscribe(emailInput, submitBtn, noteEl) {
+  const email = emailInput.value.trim();
+  
+  if (!email || !email.includes('@') || !email.includes('.')) {
+    noteEl.textContent = 'Ju lutem shkruani një email të vlefshëm.';
+    noteEl.style.color = '#c0392b';
+    emailInput.focus();
+    return;
+  }
+  
+  // Loading state
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = 'Duke dërguar...';
+  submitBtn.disabled = true;
+  submitBtn.style.opacity = '0.6';
+  
+  try {
+    const res = await fetch('/.netlify/functions/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    
+    const data = await res.json();
+    
+    if (data.success) {
+      emailInput.value = '';
+      emailInput.style.display = 'none';
+      submitBtn.style.display = 'none';
+      noteEl.textContent = 'Faleminderit! Kontrollo email-in tënd. ✦';
+      noteEl.style.color = 'var(--accent, #8B7355)';
+      noteEl.style.fontSize = '15px';
+      noteEl.style.fontStyle = 'normal';
+      noteEl.style.fontWeight = '400';
+    } else {
+      noteEl.textContent = data.error || 'Diçka shkoi keq. Provo përsëri.';
+      noteEl.style.color = '#c0392b';
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+    }
+  } catch (err) {
+    noteEl.textContent = 'Gabim lidhjeje. Provo përsëri.';
+    noteEl.style.color = '#c0392b';
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '1';
+  }
+}
+
+// Ebook form on main page
+const ebookSubmit = document.getElementById('ebookSubmit');
+const ebookEmail = document.getElementById('ebookEmail');
+const ebookNote = document.getElementById('ebookNote');
+
+if (ebookSubmit) {
+  ebookSubmit.addEventListener('click', () => handleSubscribe(ebookEmail, ebookSubmit, ebookNote));
+  ebookEmail.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleSubscribe(ebookEmail, ebookSubmit, ebookNote);
+  });
+}
+</script>
+
+</body>
+</html>
